@@ -287,8 +287,9 @@
             font-weight: 700;
             line-height: 24px;
             .now{
-              margin-right: 8px;
+              margin-right: 5px;
               font-size: 14px;
+              font-weight: 700;
               color: rgb(240,20,20);
             }
             .old{
