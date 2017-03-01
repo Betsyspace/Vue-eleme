@@ -30,6 +30,23 @@
       <div class="rating">
         <h1 class="title">商品评价</h1>
         <ratingselect :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings"></ratingselect>
+        <div class="rating-wrapper">
+          <ul v-show="food.ratings && food.ratings.length">
+            <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in food.ratings" class="rating-item border-1px">
+              <div class="user">
+                <span class="name">{{rating.username}}</span>
+                <img :src="rating.avatar" class="avatar" width="12" height="12">
+              </div>
+              <!--时间戳转换为文本 2016-01-02-->
+              <div class="time">{{rating.rateTime | formatData}}</div>
+              <p class="text">
+                <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
+              </p>
+            </li>
+          </ul>
+          <!--如果没评价-->
+          <div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
+        </div>
       </div>
     </div>
   </div>
@@ -41,10 +58,11 @@
   import split from '../../components/split/split.vue';  //切割栏
   import ratingselect from '../../components/ratingselect/ratingselect.vue';  //选择评价
   import Vue from 'vue';
+  import {formatDate} from '../../common/js/date.js';  //引入一个js方法
 
   const POSITIVE = 0;  //好评
   const NEGATIVE = 1;  //差评
-  const ALL = 2;      //全部评价哟~~
+  const ALL = 2;      //全部评价
 
   export default {
     props:{
@@ -90,7 +108,41 @@
           //用Vue.set接口添加一个属性后这个属性就能被观察到 最终能通知到dom发生变化
           Vue.set(this.food,'count',1);
           this.$dispatch('cart.add',event.target);
+        },
+        needShow(type,text) {
+           if(this.onlyContent && !text){
+               //如果选择是要显示内容 同时 这条没有内容的话 就v-show=false
+               return false;
+           }
+          //如果选择是要显示内容 同时 这条有内容的话  那就判断选择类型
+           if(this.selectType === ALL){
+               return true;
+           }else{
+               //如果这条评价的类型和我们选择的类型一致的话就为true 即显示
+               return type === this.selectType;
+           }
         }
+    },
+    //子组件ratingselect 里面通过 $dispatch 传递给food父组件的值
+    events: {
+        'ratingtype.select'(type){
+            this.selectType = type;
+            this.$nextTick(() => {
+              this.scroll.refresh();  // $nextTick => dom更新后才refresh
+            });
+        },
+        'content.toggle'(onlyContent){
+            this.onlyContent = onlyContent;
+          this.$nextTick(() => {
+            this.scroll.refresh();
+          });
+        }
+    },
+    filters: {
+      formatData(time){
+          let date = new Date(time);
+          return formatDate(date,'yyyy-MM-dd hh:mm');
+      }
     },
     components:{
       cartcontrol:cartcontrol,
@@ -101,6 +153,7 @@
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+  @import "../../common/sass/common";
   .food{
     position: fixed;
     left: 0;
@@ -229,6 +282,59 @@
           margin-left:18px;
           font-size: 14px;
           color: rgb(7,17,27);
+        }
+        .rating-wrapper{
+          padding:0 18px;
+          .rating-item{
+            position: relative;
+            padding: 16px 0;
+            @include border1px(rgba(7,17,27,0.1));
+            .user{
+              position: absolute;
+              right:0;
+              top:16px;
+              line-height: 12px;
+              font-size: 0;
+              .name{
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 6px;
+                font-size: 10px;
+                color: rgb(147,153,159);
+              }
+              .avatar{
+                border-radius: 50%;
+              }
+            }
+            .time{
+              margin-bottom: 6px;
+              line-height:12px;
+              font-size: 10px;
+              color: rgb(147,153,159);
+            }
+            .text{
+              line-height:16px;
+              font-size: 12px;
+              color: rgb(7,17,27);
+              .icon-thumb_up,.icon-thumb_down{
+                line-height: 16px;
+                margin-right: 4px;
+                font-size: 12px;
+              }
+              .icon-thumb_up{
+                color: rgb(0,160,220);
+              }
+              .icon-thumb_down{
+                color: rgb(147,153,159);
+              }
+            }
+          }
+          .no-rating{
+            padding:16px 0;
+            font-size: 12px;
+            color: rgb(147,153,159);
+            text-align: center;
+          }
         }
       }
     }
