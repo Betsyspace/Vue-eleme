@@ -73,7 +73,7 @@
           toggleContent(enent){
               this.onlyContent = !this.onlyContent;
               //通知父组件改变onlyContent
-              this.$dispatch('content.toggle',this.onlyContent);
+              this.$dispatch(' ',this.onlyContent);
           }
       }
   }
