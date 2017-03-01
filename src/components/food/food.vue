@@ -44,7 +44,7 @@
 
   const POSITIVE = 0;  //好评
   const NEGATIVE = 1;  //差评
-  const ALL = 2;      //全部评价哟
+  const ALL = 2;      //全部评价哟~~
 
   export default {
     props:{
