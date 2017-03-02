@@ -18,7 +18,7 @@
         score :{
             type: Number
         }
-    }  ,
+    },
     computed: {
         starType() { //样式名
             return 'star-' +this.size;
@@ -26,8 +26,8 @@
         itemClasses() {
             let result = [];
             let score = Math.floor(this.score*2)/2;  //3.0~3.4=3 3.5~3.9=3.5
-            let hasDecimal=score % 1 !==0;  //小数
-            let integer =Math.floor(score);  //整数
+            let hasDecimal = score % 1 !== 0;  //小数
+            let integer = Math.floor(score);  //整数
             for(let i=0;i<integer;i++){
                 result.push(CLS_ON);
             }
