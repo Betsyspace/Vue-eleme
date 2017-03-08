@@ -79,3 +79,5 @@ span{ display:table-cell;vertical-align:middle; }
 ####7、访问子组件用v-ref，通过this.$refs访问
 
 ####8、点击事件防止事件冒泡写法：@click.stop.prevent="xxx"
+
+####9、图片和文字对齐方式 分别设置display:inline-block;vertical-align:top;
