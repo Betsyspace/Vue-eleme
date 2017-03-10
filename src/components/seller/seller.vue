@@ -42,11 +42,22 @@
           </li>
         </ul>
       </div>
+      <split></split>
+      <div class="pics">
+        <h1 class="title">商家实景</h1>
+        <div class="pic-wrapper" v-el:pic-wrapper>
+          <ul class="pic-list" v-el:pic-list>
+            <li class="pic-item" v-for="pic in seller.pics">
+              <img :src="pic" width="120" height="90">
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script type="text/ecmascript-6 ">
   import BScroll from 'better-scroll';
   import star from '../../components/star/star.vue';
   import split from '../../components/split/split.vue';
@@ -57,14 +68,52 @@
         }
     },
     created() {
-    //顺序根据data.json里面的support-type里面来的
-      this.classMap =['decrease','discount','special','invoice','guarantee']
+      //顺序根据data.json里面的support-type里面来的
+      this.classMap = ['decrease','discount','special','invoice','guarantee'];
     },
     ready() {
         //当DOM被渲染完后才会执行这个created
-      this.scroll = new BScroll(this.$els.seller,{
-          click:true
-      });
+//      this.scroll = new BScroll(this.$els.seller,{
+//          click:true
+//      });
+      this._initScroll();
+      this._initPics();
+    },
+    watch: {
+      'seller'() {
+        this._initScroll();
+        this._initPics();
+      }
+    },
+    methods:{
+      _initScroll:function(){
+        if(!this.scroll){
+          this.scroll = new BScroll(this.$els.seller,{
+            click:true
+          });
+        }else{
+            this.scroll.refresh();
+        }
+      },
+      _initPics(){
+        if(this.seller.pics) {
+          let picWidth = 120;
+          let margin = 6;
+          let width = (picWidth+margin) * this.seller.pics.length - margin;
+          this.$els.picList.style.width = width + 'px';
+          if(!this.picScroll){
+            this.$nextTick(() => {
+              this.picScroll = new BScroll(this.$els.picWrapper,{
+                scrollX:true,
+                // 有些时候你想保留原生纵向的滚动条但想为横向滚动条增加Scroll功能
+                eventPassthrough:'vertical'
+              })
+            });
+          }else{
+              this.picScroll.refresh();
+          }
+        }
+      }
     },
     components: {
         star:star,
@@ -159,6 +208,9 @@
         padding:16px 12px;
         @include border1px(rgba(7,17,27,0.1));
         font-size: 0;
+        &:last-child{
+          @include border-none();
+        }
       }
       .icon{
         display: inline-block;
@@ -188,6 +240,32 @@
         line-height: 16px;
         font-size: 12px;
         color: rgb(7,17,27);
+      }
+    }
+    .pics{
+      padding:18px;
+      .title{
+        margin-bottom: 12px;
+        line-height:14px;
+        color: rgb(7,17,27);
+        font-size: 14px;
+      }
+      .pic-wrapper{
+        width:100%;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .pic-list{
+        font-size: 0;
+        .pic-item{
+          display: inline-block;
+          margin-right: 6px;
+          width:120px;
+          height:90px;
+          &:last-child{
+            margin: 0;
+          }
+        }
       }
     }
   }
